@@ -1,0 +1,90 @@
+---
+title: "week_04_assign_04"
+author: "ashraf.said@etu.unige.ch"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r}
+Cities = read.table("C:\\Users\\JEmre\\Downloads\\Cities.csv", sep = ",", header = TRUE)
+head(Cities)
+```
+
+
+```{r}
+str(Cities)
+```
+
+
+```{r}
+class(Cities$City) 
+class(Cities$Work)
+class(Cities$Price)
+class(Cities$Salary)
+```
+```{r}
+
+# eliminate NA values
+Cities.0nas = na.omit(Cities) # delete observations which contain at least one NA
+
+#check the summaries again:
+summary(Cities.0nas) # A basic description
+
+mean(Cities.0nas$Work) 
+median(Cities.0nas$Work)
+quantile(Cities.0nas$Work, probs = c(0.25,0.75)) 
+max(Cities.0nas$Work)
+```
+
+
+
+```{r}
+par(mfrow=c(1,3))
+boxplot(Cities$Work,col="lightsalmon1", main = "Work")
+# with the default color changed to lightsalmon
+boxplot(Cities$Price,col="mediumseagreen", main = "Price")
+boxplot(Cities$Salary,col="goldenrod2", main = "Salary")
+par(mfrow=c(1,1)) # back to the default setting
+```
+
+let us check densities plots 
+```{r}
+par(mfrow=c(1, 3)) 
+plot(density(Cities.0nas$Work))
+plot(density(Cities.0nas$Price))
+plot(density(Cities.0nas$Salary))
+```
+
+Draw histograms of all the numerical (continuous) variables into a single graphical window. Use here as well the mfrow and col parameters to change the default settings
+```{r}
+par(mfrow=c(1,3)) # 3 figures arranged in a row
+hist(Cities.0nas$Work, col = "lightsalmon1")
+hist(Cities.0nas$Price, col = "mediumseagreen")
+hist(Cities.0nas$Salary, col = "goldenrod2")
+par(mfrow=c(1,1)) # back to the default setting
+```
+
+
+```{r}
+library(vioplot)
+par(mfrow=c(1 ,3)) # 3 figures arranged in a row
+vioplot(Cities$Work, main = "Work", col = "lightblue")
+vioplot(Cities$Price, main = "Price", col = "seagreen")
+vioplot(Cities$Salary, main = "Salary", col = "pink")
+par(mfrow=c(1 ,1)) # back to the default setting
+```
+Since the vioplot is the combination of boxplot and kernel density plot, we can draw the same conclusions as in 2 and 3. But we cannot identify the outlier from vioplot.
+
+
+Next Compare, via QQ-plots, the empirical distribution of variables `Work, Price and Salary` separately with the Gaussian distribution and draw a reference line. Does the Gaussian distribution fit well?
+
+```{r}
+par(mfrow=c(1 ,3)) # 3 figures arranged in a row
+qqnorm(Cities$Work, main="Work")
+qqline(Cities$Work, col = "blue", lwd = 2)
+qqnorm(Cities$Price, main="Price")
+qqline(Cities$Price, col = "seagreen", lwd =2)
+qqnorm(Cities$Salary, main="Salary")
+qqline(Cities$Salary, col = "darkred", lwd = 2)
+```
+From the QQ-plots, we can conclude that the variable ”Work” and ”Price” are roughly normally distributed, but variable ”Salary” is not normally distributed since there is a clear departure in the tails.

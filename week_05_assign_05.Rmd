@@ -1,0 +1,147 @@
+---
+title: "week_05_assign_05"
+author: "ashraf.said@etu.unige.ch"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+let us first compute the probability corresponding to the below quantile using the *pnorm function* and the given normal distribution parameters 
+```{r}
+# P(X < 12)
+quan_12 <- pnorm(q = 12, mean = 10, sd = sqrt(4))
+quan_12
+# P(X > 10)
+quan_10 <- pnorm(q = 10 , mean =10 , sd = sqrt(4))
+quan_10
+
+#P( 10 < X < 12) = F(12) - F(10)
+quan_12-quan_10
+```
+let us compute the 90th percentile of an expo distribution with rate parameter 1/2 , 1/4 and 2
+
+```{r}
+qexp(p = 0.9, rate = 1/2)
+qexp(p = 0.9, rate = 1/4)
+qexp(p = 0.9, rate = 2) 
+
+```
+
+
+
+```{r}
+# P(X=2)
+dpois(x =  2,lambda = 4)
+
+# P(X <= 2)
+# Careful with the definition of CDF: For <= 2, we use ppois() or we add P(X=0)+P(X=1)+P(X=2)
+ppois(q = 2,lambda = 4, lower.tail = TRUE)
+
+#dpois(x = 0, lambda = 4) + dpois(x = 1, lambda = 4) + dpois(x = 2, lambda = 4) alternatively 
+sum(dpois(x = 0:2,lambda = 4))
+```
+
+let us generate some random numbers from normal with parameters 
+1.5 and 2 as mean and standard deviation respectively 
+
+```{r}
+norm.sample <- rnorm(n = 200, mean = 1.5, sd = 2)
+head(norm.sample)
+max(norm.sample);min(norm.sample);range(norm.sample);norm.sample[76:79]
+```
+
+
+```{r}
+plot(density(norm.sample), main = "Kernel Density")
+```
+
+
+
+
+```{r}
+plot(density(norm.sample), main = "Kernel Density")
+lines(norm.sample, dnorm(norm.sample, mean =1.5, sd = 2 ), col="red")
+
+```
+
+
+let us do some ordering or sorting the points 
+
+```{r}
+plot(density(norm.sample), main = "Kernel Density")
+sorted.norm.sample = sort(norm.sample)
+lines(sorted.norm.sample, dnorm(sorted.norm.sample,mean  = 1.5, sd = 2),
+col="red")
+```
+
+note that above the black line represents the simulated data points and the red is the one which represents actually the theoretical normal distribution 
+```{r}
+mean(sorted.norm.sample);sd(sorted.norm.sample)
+mean(norm.sample);sd(norm.sample)
+
+```
+As an example, we shall study the behavior of the sampling distribution of the median of a sample, median $\left(X_1, \ldots, X_n\right)$, when the observations are drawn from an exponential distribution, with the below CDF 
+
+
+$$
+F(x)=1-\exp (-\lambda x)
+$$
+
+To look at the sampling distribution of the median when $\lambda=1 / 2$ and sample size is 100, we simulate 500 samples: we proceed via standard for loop
+
+```{r}
+exp.median <- numeric(500)
+for (i in 1:500){
+  exp.median[i]<- median(rexp(100, rate = 1/2))
+}
+```
+
+Explore graphically the sampling distribution of the above simulated median (with histograms, boxplots etc).
+
+```{r}
+par(mfrow=c(1,3))
+hist(exp.median, probability = TRUE, col = "darkseagreen")
+#lines(density(Exp.median),col="navyblue")
+boxplot(exp.median, probability = TRUE, col = "salmon")
+abline(h=1.39, col = "navyblue") #theoretical median we computed in point 1.
+library(vioplot)
+vioplot(exp.median, col = "lightblue")
+```
+
+
+let us check normality Q-Q plot
+
+```{r}
+par(mfrow=c(1,1))
+qqnorm(exp.median)
+qqline(exp.median)
+# certainly looks like normal
+```
+
+Redoing the same steps as before for the 90-th quantile of the distribution rather than the 50-th percentile 
+
+```{r}
+exp_90q <- numeric(500)
+for (i in 1:500){
+  exp_90q [i]<- quantile(rexp(100, rate = 1/2),probs = 0.9)
+} # where number of experiments = 500  and sample size per experiment is 100
+```
+
+
+
+```{r}
+par(mfrow=c(1,3))
+hist(exp_90q, probability = TRUE, col = "darkseagreen")
+
+boxplot(exp_90q, probability = TRUE, col = "salmon")
+
+abline(h=1.39, col = "navyblue") 
+
+library(vioplot)
+vioplot(exp_90q, col = "lightblue")
+```
+
+```{r}
+par(mfrow=c(1,1))
+qqnorm(exp_90q)
+qqline(exp_90q)
+```

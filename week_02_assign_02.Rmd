@@ -1,0 +1,193 @@
+---
+title: "week_02_assign_02"
+author: "ashraf.said@etu.unige.ch"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r}
+lc2 <- read.table("C:\\Users\\JEmre\\Downloads\\LastCall2.txt",header=TRUE)
+head(lc2)
+```
+
+```{r}
+m = lc2$male
+f = lc2$female
+```
+
+
+
+```{r}
+sort(f)
+n <- length(f)
+mean <- sum(f)/length(f)
+mean(f)
+
+# calculating the median by working out the rank first
+0.5 * (n-1) + 1
+sort(f)[13]
+
+median(f)
+
+# 25-th percentile 
+0.25 * (n-1) + 1
+sort(f)[7]
+
+quantile(f,0.25)
+
+# 75-th percentile
+0.75 * (n-1) + 1
+sort(f)[19]
+#CHECK
+quantile(f,0.75)
+
+#var
+sum((f-(sum(f)/length(f)))^2)/(n-1)
+#CHECK
+var(f)
+IQR(f)
+boxplot(f) # we can see that it is overly skewed to the right i.e. median will be lower than the mean but it will have a higher probability of occurrence or density , that is is usually the case of returns of financial assets traded on organized exchanges , and in such situation we will need way higher sample size to validate our conclusions statistically speaking #
+
+```
+
+Question: can we subset multiple indices from the data?
+Yes, you can do this by first creating a vector of indices. Remember that you can do this using the function `c()`, which stands for *concatenate* or in other words, *merge together*.
+
+
+```{r}
+sort(f)[c(19,22,23)]
+```
+
+```{r}
+head(m)
+```
+
+```{r}
+data.frame(mean(m),var(m),median(m),sd(m))
+```
+
+
+```{r}
+mean.f <- mean(f)
+mean.m <- mean(m)
+```
+
+let's us combine some of the statistics above in one data frame
+```{r}
+data.frame(mean(f),mean(m),var(f),var(m))
+```
+
+```{r}
+gardasil <- read.table("C:\\Users\\JEmre\\Downloads\\GardasilStudy.csv",header = T, sep = ";")
+head(gardasil)
+```
+
+Checking that the variable `Race` in the Gardasil dataset is a factor.
+
+```{r}
+is.factor(gardasil$Race)
+```
+```{r}
+is.factor(gardasil$Completed)
+```
+
+Given that answer is false , let us add these factors as numerical 
+```{r}
+gardasil$Completed <- factor(gardasil$Completed,
+                             levels=c(1,0),
+                             labels=c("Completed","Uncompleted"))
+is.factor(gardasil$Completed)
+```
+
+let us construct some tables and check the distribution of some of the commands operating on bivariate , n-variate data sets
+
+```{r}
+table(gardasil$Race)
+table(gardasil$Completed)
+table(gardasil$InsuranceType)
+table(gardasil$LocationType)
+
+```
+
+
+```{r}
+table(gardasil)
+
+```
+Now, we transform variable frequencies of "InsuranceType" in to proportions
+```{r}
+ins.tab <- table(gardasil$InsuranceType)
+ins.tab <- ins.tab/sum(ins.tab)
+ins.tab
+```
+The function `xtabs()` allow to construct contingency tables by specifying which variables to use. Build a contingency table to represent the type of insurance according to the location of the clinics.
+```{r}
+xtabs(~InsuranceType+LocationType,data=gardasil)
+
+nrow(gardasil)
+```
+Plotting 
+
+```{r}
+mosaicplot(~gardasil$Completed+gardasil$LocationType)
+
+#corresponding contingency table
+xtabs(~Completed+LocationType,data=gardasil)
+
+```
+
+Now we change the order of the variables being plotted within the 
+contingency table
+```{r}
+mosaicplot(~gardasil$LocationType+gardasil$Completed)
+
+#corresponding contingency table
+xtabs(~LocationType+Completed,data=gardasil)
+
+```
+
+To add labels on the x-axis and y-axis
+```{r}
+mosaicplot(~gardasil$Completed+gardasil$LocationType,xlab = "Completed",ylab="Location Type")
+```
+Question;If you were in an urban area, would you have a smaller or greater probability to complete the vaccine study?
+
+
+```{r}
+mosaicplot(~gardasil$Completed+gardasil$LocationType,xlab = "Completed",ylab="Location Type")
+# we can see that rectangle corresponding to the urban is smaller hence lower probability to complete the vaccine
+```
+
+
+```{r}
+mosaicplot(~gardasil$LocationType+gardasil$Completed+gardasil$InsuranceType, xlab="Location Type",ylab="Completed", las=2,main="Location vs Completed according to insurance")
+```
+
+
+```{r}
+# angles for each slice corresponding to each category of the  `Race` variable
+race.freq = table(gardasil$Race)/sum(table(gardasil$Race))
+race.freq*360
+```
+
+```{r}
+pie(table(gardasil$InsuranceType),radius = 1 , init.angle = 90)
+```
+
+```{r}
+pie(table(gardasil$Race), col = sample(colours(distinct = TRUE), 4))
+```
+
+```{r}
+barplot(
+table(gardasil$InsuranceType),
+main="Patients by type of insurance",
+col=c("red","green","blue","black")
+)
+```
+
+
+```{r}
+barplot(table(gardasil$LocationType), horiz=T,col=sample(colours(distinct = TRUE)))
+title("Patients by type of location")
+```
